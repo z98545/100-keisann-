@@ -1,6 +1,6 @@
-const GRID_SIZE = 10;
-const TOTAL_TASKS = 100;
-const RANKING_KEY = "masCalculationRanking";
+const GRID_SIZE = 5;
+const TOTAL_TASKS = 25;
+const RANKING_KEY = "masCalculationRanking5x5";
 
 const modeSelect = document.getElementById("modeSelect");
 const timeLimitInput = document.getElementById("timeLimitInput");
@@ -141,7 +141,6 @@ function gradeAnswers() {
   stopTimer();
   renderTasks();
 
-  // 結果表示
   showResult(correctCount);
 }
 
@@ -183,7 +182,6 @@ function registerToRanking(score, time) {
     date: new Date().toISOString()
   });
 
-  // タイムでソート（昇順）
   ranking.sort((a, b) => a.time - b.time);
 
   saveRanking(ranking);
@@ -295,7 +293,6 @@ startBtn.addEventListener("click", startGame);
 resetBtn.addEventListener("click", resetGame);
 checkBtn.addEventListener("click", gradeAnswers);
 
-// 初期表示
 generateTasks(modeSelect.value);
 renderTasks();
 renderRanking();

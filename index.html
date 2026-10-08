@@ -3,13 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>100マス計算アプリ</title>
+    <title>5×5マス計算アプリ</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="app">
       <header class="header">
-        <h1>100マス計算アプリ</h1>
+        <h1>5×5マス計算アプリ</h1>
       </header>
 
       <section class="toolbar">
@@ -38,7 +38,7 @@
       </section>
 
       <section class="status">
-        <div>正解数: <strong id="score">0</strong>/100</div>
+        <div>正解数: <strong id="score">0</strong>/25</div>
         <div>残り時間: <strong id="timer">180</strong>秒</div>
       </section>
 
@@ -52,7 +52,7 @@
         <div class="result-card">
           <h2 id="resultTitle"></h2>
           <div class="result-details">
-            <div>正解数: <strong id="resultScore"></strong>/100</div>
+            <div>正解数: <strong id="resultScore"></strong>/25</div>
             <div>タイム: <strong id="resultTime"></strong>秒</div>
           </div>
           <button id="registerBtn" class="primary hidden">ランキングに登録</button>
@@ -61,7 +61,7 @@
       </section>
 
       <section id="rankingSection" class="ranking-section">
-        <h2>🏆 ランキング（100点満点のみ）</h2>
+        <h2>🏆 ランキング（25点満点のみ）</h2>
         <div id="rankingList" class="ranking-list">
           <p class="muted">まだランキング記録がありません</p>
         </div>
