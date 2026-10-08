@@ -42,7 +42,12 @@
         <div>残り時間: <strong id="timer">180</strong>秒</div>
       </section>
 
-      <div id="grid" class="grid" aria-live="polite"></div>
+      <div class="grid-container">
+        <div class="header-col"></div>
+        <div class="header-row" id="headerRow"></div>
+        <div class="side-col" id="sideCol"></div>
+        <div id="grid" class="grid" aria-live="polite"></div>
+      </div>
 
       <div class="footer">
         <button id="checkBtn" class="primary">採点</button>

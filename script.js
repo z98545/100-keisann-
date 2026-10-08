@@ -9,6 +9,8 @@ const startBtn = document.getElementById("startBtn");
 const resetBtn = document.getElementById("resetBtn");
 const checkBtn = document.getElementById("checkBtn");
 const grid = document.getElementById("grid");
+const headerRow = document.getElementById("headerRow");
+const sideCol = document.getElementById("sideCol");
 const scoreEl = document.getElementById("score");
 const timerEl = document.getElementById("timer");
 const resultSection = document.getElementById("resultSection");
@@ -20,6 +22,8 @@ const registeredMsg = document.getElementById("registeredMsg");
 const rankingList = document.getElementById("rankingList");
 
 let tasks = [];
+let verticalNumbers = [];
+let horizontalNumbers = [];
 let timerId = null;
 let timeLeft = 180;
 let elapsedTime = 0;
@@ -36,7 +40,7 @@ function getOperatorSymbol(op) {
   return "×";
 }
 
-function createTask(mode, row, col) {
+function createTask(mode) {
   let op;
   if (mode === "mixed") {
     const ops = ["add", "sub", "mul"];
@@ -48,22 +52,20 @@ function createTask(mode, row, col) {
   let left, right, answer;
 
   if (op === "add") {
-    left = row;
-    right = col;
+    left = randomInt(1, 99);
+    right = randomInt(1, 99);
     answer = left + right;
   } else if (op === "sub") {
-    left = Math.max(row, col);
-    right = Math.min(row, col);
+    left = randomInt(10, 99);
+    right = randomInt(1, left - 1);
     answer = left - right;
   } else {
-    left = row;
-    right = col;
+    left = randomInt(2, 12);
+    right = randomInt(2, 12);
     answer = left * right;
   }
 
   return {
-    row,
-    col,
     left,
     right,
     op,
@@ -74,61 +76,74 @@ function createTask(mode, row, col) {
   };
 }
 
+function generateNumbers() {
+  verticalNumbers = [];
+  horizontalNumbers = [];
+  
+  for (let i = 0; i < GRID_SIZE; i++) {
+    verticalNumbers.push(randomInt(1, 99));
+    horizontalNumbers.push(randomInt(1, 99));
+  }
+}
+
 function generateTasks(mode) {
   tasks = [];
-  for (let row = 1; row <= GRID_SIZE; row++) {
-    for (let col = 1; col <= GRID_SIZE; col++) {
-      tasks.push(createTask(mode, row, col));
-    }
+  for (let i = 0; i < TOTAL_TASKS; i++) {
+    tasks.push(createTask(mode));
   }
+}
+
+function renderHeaderRow() {
+  headerRow.innerHTML = "";
+  horizontalNumbers.forEach((num) => {
+    const cell = document.createElement("div");
+    cell.className = "header-cell";
+    cell.textContent = num;
+    headerRow.appendChild(cell);
+  });
+}
+
+function renderSideCol() {
+  sideCol.innerHTML = "";
+  verticalNumbers.forEach((num) => {
+    const cell = document.createElement("div");
+    cell.className = "side-cell";
+    cell.textContent = num;
+    sideCol.appendChild(cell);
+  });
 }
 
 function renderTasks() {
   grid.innerHTML = "";
-  grid.style.gridTemplateColumns = `52px repeat(${GRID_SIZE}, minmax(72px, 1fr))`;
 
-  const corner = document.createElement("div");
-  corner.className = "axis-corner";
-  grid.appendChild(corner);
+  tasks.forEach((task, index) => {
+    const cell = document.createElement("div");
+    cell.className = "task";
 
-  for (let col = 1; col <= GRID_SIZE; col++) {
-    const header = document.createElement("div");
-    header.className = "axis-header";
-    header.textContent = String(col);
-    grid.appendChild(header);
-  }
-
-  for (let row = 1; row <= GRID_SIZE; row++) {
-    const rowLabel = document.createElement("div");
-    rowLabel.className = "axis-row-label";
-    rowLabel.textContent = String(row);
-    grid.appendChild(rowLabel);
-
-    for (let col = 1; col <= GRID_SIZE; col++) {
-      const task = tasks[(row - 1) * GRID_SIZE + (col - 1)];
-      const cell = document.createElement("div");
-      cell.className = "task matrix-task";
-
-      if (task.isCorrect === true) {
-        cell.classList.add("correct");
-      } else if (task.isCorrect === false) {
-        cell.classList.add("wrong");
-      }
-
-      const input = document.createElement("input");
-      input.type = "number";
-      input.value = task.userInput;
-      input.setAttribute("aria-label", `行 ${row} 列 ${col}`);
-      input.disabled = isAnswered;
-
-      input.addEventListener("input", (e) => {
-        task.userInput = e.target.value;
-      });
-
-      cell.appendChild(input);
-      grid.appendChild(cell);
+    if (task.isCorrect === true) {
+      cell.classList.add("correct");
+    } else if (task.isCorrect === false) {
+      cell.classList.add("wrong");
     }
-  }
+
+    const expression = document.createElement("div");
+    expression.className = "task-expression";
+    expression.textContent = task.expression;
+
+    const input = document.createElement("input");
+    input.type = "number";
+    input.value = task.userInput;
+    input.setAttribute("aria-label", `問題 ${index + 1}`);
+    input.disabled = isAnswered;
+
+    input.addEventListener("input", (e) => {
+      task.userInput = e.target.value;
+    });
+
+    cell.appendChild(expression);
+    cell.appendChild(input);
+    grid.appendChild(cell);
+  });
 }
 
 function updateTimer() {
@@ -156,7 +171,7 @@ function gradeAnswers() {
   });
 
   currentScore = correctCount;
-  scoreEl.textContent = `${correctCount}/${TOTAL_TASKS}`;
+  scoreEl.textContent = String(correctCount);
   isAnswered = true;
   stopTimer();
   renderTasks();
@@ -197,16 +212,18 @@ function registerToRanking(score, time) {
   const ranking = getRanking();
   ranking.push({
     name: username,
-    score,
-    time,
+    score: score,
+    time: time,
     date: new Date().toISOString()
   });
 
   ranking.sort((a, b) => a.time - b.time);
+
   saveRanking(ranking);
 
   registerBtn.classList.add("hidden");
   registeredMsg.classList.remove("hidden");
+
   renderRanking();
 }
 
@@ -233,9 +250,13 @@ function renderRanking() {
     const item = document.createElement("div");
     item.className = "ranking-item";
 
-    if (index === 0) item.classList.add("gold");
-    else if (index === 1) item.classList.add("silver");
-    else if (index === 2) item.classList.add("bronze");
+    if (index === 0) {
+      item.classList.add("gold");
+    } else if (index === 1) {
+      item.classList.add("silver");
+    } else if (index === 2) {
+      item.classList.add("bronze");
+    }
 
     const rank = document.createElement("div");
     rank.className = "rank-num";
@@ -267,14 +288,17 @@ function startGame() {
   elapsedTime = 0;
   isAnswered = false;
   currentScore = 0;
-  scoreEl.textContent = `0/${TOTAL_TASKS}`;
+  scoreEl.textContent = "0";
   updateTimer();
 
   resultSection.classList.add("hidden");
   registeredMsg.classList.add("hidden");
   registerBtn.classList.add("hidden");
 
+  generateNumbers();
   generateTasks(mode);
+  renderHeaderRow();
+  renderSideCol();
   renderTasks();
 
   stopTimer();
@@ -291,7 +315,7 @@ function startGame() {
 
 function resetGame() {
   stopTimer();
-  scoreEl.textContent = `0/${TOTAL_TASKS}`;
+  scoreEl.textContent = "0";
   timeLeft = Number(timeLimitInput.value) || 180;
   elapsedTime = 0;
   updateTimer();
@@ -299,7 +323,10 @@ function resetGame() {
   resultSection.classList.add("hidden");
   registeredMsg.classList.add("hidden");
   registerBtn.classList.add("hidden");
+  generateNumbers();
   generateTasks(modeSelect.value);
+  renderHeaderRow();
+  renderSideCol();
   renderTasks();
 }
 
@@ -307,6 +334,9 @@ startBtn.addEventListener("click", startGame);
 resetBtn.addEventListener("click", resetGame);
 checkBtn.addEventListener("click", gradeAnswers);
 
+generateNumbers();
 generateTasks(modeSelect.value);
+renderHeaderRow();
+renderSideCol();
 renderTasks();
 renderRanking();
