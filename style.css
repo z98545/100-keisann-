@@ -135,24 +135,29 @@ button:disabled {
 
 .grid-container {
   display: grid;
-  grid-template-columns: 60px 1fr;
+  grid-template-columns: 70px 1fr;
   grid-template-rows: 60px 1fr;
   gap: 0;
   margin: 20px auto;
   width: fit-content;
+  border: 3px solid #000;
+  background: #000;
 }
 
 .header-col {
   grid-column: 1;
   grid-row: 1;
-  background: #f8fafc;
+  background: #d9ead3;
+  border: 2px solid #000;
+  border-right: 0;
+  border-bottom: 0;
 }
 
 .header-row {
   grid-column: 2;
   grid-row: 1;
   display: grid;
-  grid-template-columns: repeat(5, 80px);
+  grid-template-columns: repeat(5, 110px);
   gap: 0;
 }
 
@@ -161,9 +166,11 @@ button:disabled {
   align-items: center;
   justify-content: center;
   border: 2px solid #000;
+  border-left: 0;
+  border-bottom: 0;
   font-weight: 700;
   font-size: 1.1rem;
-  background: #f8fafc;
+  background: #d9ead3;
   height: 60px;
 }
 
@@ -171,7 +178,7 @@ button:disabled {
   grid-column: 1;
   grid-row: 2;
   display: grid;
-  grid-template-rows: repeat(5, 80px);
+  grid-template-rows: repeat(5, 110px);
   gap: 0;
 }
 
@@ -180,19 +187,22 @@ button:disabled {
   align-items: center;
   justify-content: center;
   border: 2px solid #000;
+  border-top: 0;
+  border-right: 0;
   font-weight: 700;
   font-size: 1.1rem;
-  background: #f8fafc;
-  width: 60px;
+  background: #d9ead3;
+  width: 70px;
 }
 
 .grid {
   grid-column: 2;
   grid-row: 2;
   display: grid;
-  grid-template-columns: repeat(5, 80px);
-  grid-template-rows: repeat(5, 80px);
+  grid-template-columns: repeat(5, 110px);
+  grid-template-rows: repeat(5, 110px);
   gap: 0;
+  background: #000;
 }
 
 .task {
@@ -200,34 +210,32 @@ button:disabled {
   align-items: center;
   justify-content: center;
   border: 2px solid #000;
-  background: #fff;
+  background: #dfeaf7;
   transition: all 0.15s ease;
   padding: 4px;
 }
 
 .task.correct input {
-  background: rgba(16, 185, 129, 0.3);
-  border-color: rgba(16, 185, 129, 0.6);
+  background: rgba(16, 185, 129, 0.25);
 }
 
 .task.wrong input {
-  background: rgba(239, 68, 68, 0.2);
-  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.18);
 }
 
 .task input {
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 80px;
   text-align: center;
-  border: none;
+  border: 2px solid transparent;
   padding: 0;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   font-weight: 700;
   background: transparent;
 }
 
 .task input:disabled {
-  background: #f3f4f6 !important;
+  background: #e5e7eb !important;
   cursor: not-allowed;
 }
 
@@ -410,42 +418,36 @@ button:disabled {
   }
 
   .grid-container {
-    grid-template-columns: 50px 1fr;
-    grid-template-rows: 50px 1fr;
-  }
-
-  .header-col {
-    width: 50px;
-    height: 50px;
+    transform: scale(0.9);
+    transform-origin: top center;
   }
 
   .header-row {
-    grid-template-columns: repeat(5, 60px);
+    grid-template-columns: repeat(5, 90px);
   }
 
   .header-cell {
-    height: 50px;
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
 
   .side-col {
-    grid-template-rows: repeat(5, 60px);
+    grid-template-rows: repeat(5, 90px);
   }
 
   .side-cell {
-    width: 50px;
-    font-size: 0.9rem;
+    width: 60px;
+    font-size: 1rem;
   }
 
   .grid {
-    grid-template-columns: repeat(5, 60px);
-    grid-template-rows: repeat(5, 60px);
+    grid-template-columns: repeat(5, 90px);
+    grid-template-rows: repeat(5, 90px);
   }
 
   .task input {
-    width: 60px;
-    height: 60px;
-    font-size: 1rem;
+    width: 65px;
+    height: 65px;
+    font-size: 1.1rem;
   }
 
   .result-details {

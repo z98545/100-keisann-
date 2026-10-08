@@ -34,13 +34,7 @@ function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function getOperation(mode) {
-  if (mode === "add") return "+";
-  if (mode === "sub") return "-";
-  return "×";
-}
-
-function getAnswer(vertical, horizontal, mode) {
+function calculateAnswer(vertical, horizontal, mode) {
   if (mode === "add") return vertical + horizontal;
   if (mode === "sub") return vertical - horizontal;
   return vertical * horizontal;
@@ -65,13 +59,12 @@ function generateNumbers(mode) {
 }
 
 function createTask(vertical, horizontal, mode) {
-  const answer = getAnswer(vertical, horizontal, mode);
   return {
     vertical,
     horizontal,
-    answer,
+    answer: calculateAnswer(vertical, horizontal, mode),
     userInput: "",
-    isCorrect: null
+    isCorrect: null,
   };
 }
 
@@ -91,6 +84,12 @@ function generateTasks(mode) {
 
 function renderHeaderRow() {
   headerRow.innerHTML = "";
+
+  const opCell = document.createElement("div");
+  opCell.className = "header-cell";
+  opCell.textContent = "+";
+  headerRow.appendChild(opCell);
+
   horizontalNumbers.forEach((num) => {
     const cell = document.createElement("div");
     cell.className = "header-cell";
@@ -101,6 +100,12 @@ function renderHeaderRow() {
 
 function renderSideCol() {
   sideCol.innerHTML = "";
+
+  const opCell = document.createElement("div");
+  opCell.className = "side-cell";
+  opCell.textContent = "+";
+  sideCol.appendChild(opCell);
+
   verticalNumbers.forEach((num) => {
     const cell = document.createElement("div");
     cell.className = "side-cell";
@@ -156,7 +161,9 @@ function gradeAnswers() {
     const isCorrect = !Number.isNaN(userValue) && userValue === task.answer;
 
     task.isCorrect = isCorrect;
-    if (isCorrect) correctCount++;
+    if (isCorrect) {
+      correctCount++;
+    }
   });
 
   scoreEl.textContent = String(correctCount);
@@ -201,7 +208,7 @@ function registerToRanking(score, time) {
     name: username,
     score,
     time,
-    date: new Date().toISOString()
+    date: new Date().toISOString(),
   });
 
   ranking.sort((a, b) => a.time - b.time);
@@ -286,7 +293,9 @@ function startGame() {
     elapsedTime += 1;
     updateTimer();
 
-    if (timeLeft <= 0) gradeAnswers();
+    if (timeLeft <= 0) {
+      gradeAnswers();
+    }
   }, 1000);
 }
 
