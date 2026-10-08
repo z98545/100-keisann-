@@ -28,68 +28,64 @@ let timerId = null;
 let timeLeft = 180;
 let elapsedTime = 0;
 let isAnswered = false;
-let currentScore = 0;
+let currentMode = "add";
 
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function getOperatorSymbol(op) {
-  if (op === "add") return "+";
-  if (op === "sub") return "-";
+function getOperation(mode) {
+  if (mode === "add") return "+";
+  if (mode === "sub") return "-";
   return "×";
 }
 
-function createTask(mode) {
-  let op;
-  if (mode === "mixed") {
-    const ops = ["add", "sub", "mul"];
-    op = ops[randomInt(0, ops.length - 1)];
-  } else {
-    op = mode;
+function getAnswer(vertical, horizontal, mode) {
+  if (mode === "add") return vertical + horizontal;
+  if (mode === "sub") return vertical - horizontal;
+  return vertical * horizontal;
+}
+
+function generateNumbers(mode) {
+  verticalNumbers = [];
+  horizontalNumbers = [];
+
+  for (let i = 0; i < GRID_SIZE; i++) {
+    if (mode === "mul") {
+      verticalNumbers.push(randomInt(2, 9));
+      horizontalNumbers.push(randomInt(2, 9));
+    } else if (mode === "sub") {
+      verticalNumbers.push(randomInt(10, 99));
+      horizontalNumbers.push(randomInt(1, 9));
+    } else {
+      verticalNumbers.push(randomInt(1, 99));
+      horizontalNumbers.push(randomInt(1, 99));
+    }
   }
+}
 
-  let left, right, answer;
-
-  if (op === "add") {
-    left = randomInt(1, 99);
-    right = randomInt(1, 99);
-    answer = left + right;
-  } else if (op === "sub") {
-    left = randomInt(10, 99);
-    right = randomInt(1, left - 1);
-    answer = left - right;
-  } else {
-    left = randomInt(2, 12);
-    right = randomInt(2, 12);
-    answer = left * right;
-  }
-
+function createTask(vertical, horizontal, mode) {
+  const answer = getAnswer(vertical, horizontal, mode);
   return {
-    left,
-    right,
-    op,
+    vertical,
+    horizontal,
     answer,
     userInput: "",
-    isCorrect: null,
-    expression: `${left} ${getOperatorSymbol(op)} ${right}`
+    isCorrect: null
   };
 }
 
-function generateNumbers() {
-  verticalNumbers = [];
-  horizontalNumbers = [];
-  
-  for (let i = 0; i < GRID_SIZE; i++) {
-    verticalNumbers.push(randomInt(1, 99));
-    horizontalNumbers.push(randomInt(1, 99));
-  }
-}
-
 function generateTasks(mode) {
+  currentMode = mode;
+  generateNumbers(mode);
   tasks = [];
-  for (let i = 0; i < TOTAL_TASKS; i++) {
-    tasks.push(createTask(mode));
+
+  for (let row = 0; row < GRID_SIZE; row++) {
+    for (let col = 0; col < GRID_SIZE; col++) {
+      const vertical = verticalNumbers[row];
+      const horizontal = horizontalNumbers[col];
+      tasks.push(createTask(vertical, horizontal, mode));
+    }
   }
 }
 
@@ -126,10 +122,6 @@ function renderTasks() {
       cell.classList.add("wrong");
     }
 
-    const expression = document.createElement("div");
-    expression.className = "task-expression";
-    expression.textContent = task.expression;
-
     const input = document.createElement("input");
     input.type = "number";
     input.value = task.userInput;
@@ -140,7 +132,6 @@ function renderTasks() {
       task.userInput = e.target.value;
     });
 
-    cell.appendChild(expression);
     cell.appendChild(input);
     grid.appendChild(cell);
   });
@@ -165,17 +156,13 @@ function gradeAnswers() {
     const isCorrect = !Number.isNaN(userValue) && userValue === task.answer;
 
     task.isCorrect = isCorrect;
-    if (isCorrect) {
-      correctCount++;
-    }
+    if (isCorrect) correctCount++;
   });
 
-  currentScore = correctCount;
   scoreEl.textContent = String(correctCount);
   isAnswered = true;
   stopTimer();
   renderTasks();
-
   showResult(correctCount);
 }
 
@@ -212,18 +199,16 @@ function registerToRanking(score, time) {
   const ranking = getRanking();
   ranking.push({
     name: username,
-    score: score,
-    time: time,
+    score,
+    time,
     date: new Date().toISOString()
   });
 
   ranking.sort((a, b) => a.time - b.time);
-
   saveRanking(ranking);
 
   registerBtn.classList.add("hidden");
   registeredMsg.classList.remove("hidden");
-
   renderRanking();
 }
 
@@ -250,13 +235,9 @@ function renderRanking() {
     const item = document.createElement("div");
     item.className = "ranking-item";
 
-    if (index === 0) {
-      item.classList.add("gold");
-    } else if (index === 1) {
-      item.classList.add("silver");
-    } else if (index === 2) {
-      item.classList.add("bronze");
-    }
+    if (index === 0) item.classList.add("gold");
+    else if (index === 1) item.classList.add("silver");
+    else if (index === 2) item.classList.add("bronze");
 
     const rank = document.createElement("div");
     rank.className = "rank-num";
@@ -287,7 +268,6 @@ function startGame() {
   timeLeft = Number.isFinite(limit) && limit > 0 ? limit : 180;
   elapsedTime = 0;
   isAnswered = false;
-  currentScore = 0;
   scoreEl.textContent = "0";
   updateTimer();
 
@@ -295,7 +275,6 @@ function startGame() {
   registeredMsg.classList.add("hidden");
   registerBtn.classList.add("hidden");
 
-  generateNumbers();
   generateTasks(mode);
   renderHeaderRow();
   renderSideCol();
@@ -307,9 +286,7 @@ function startGame() {
     elapsedTime += 1;
     updateTimer();
 
-    if (timeLeft <= 0) {
-      gradeAnswers();
-    }
+    if (timeLeft <= 0) gradeAnswers();
   }, 1000);
 }
 
@@ -323,7 +300,7 @@ function resetGame() {
   resultSection.classList.add("hidden");
   registeredMsg.classList.add("hidden");
   registerBtn.classList.add("hidden");
-  generateNumbers();
+
   generateTasks(modeSelect.value);
   renderHeaderRow();
   renderSideCol();
@@ -334,7 +311,6 @@ startBtn.addEventListener("click", startGame);
 resetBtn.addEventListener("click", resetGame);
 checkBtn.addEventListener("click", gradeAnswers);
 
-generateNumbers();
 generateTasks(modeSelect.value);
 renderHeaderRow();
 renderSideCol();

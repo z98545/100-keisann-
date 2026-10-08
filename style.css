@@ -73,6 +73,16 @@ input[type="text"] {
   min-width: 100px;
 }
 
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 button {
   border: none;
   border-radius: 10px;
@@ -128,10 +138,8 @@ button:disabled {
   grid-template-columns: 60px 1fr;
   grid-template-rows: 60px 1fr;
   gap: 0;
-  margin: 20px 0;
+  margin: 20px auto;
   width: fit-content;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .header-col {
@@ -156,6 +164,7 @@ button:disabled {
   font-weight: 700;
   font-size: 1.1rem;
   background: #f8fafc;
+  height: 60px;
 }
 
 .side-col {
@@ -174,6 +183,7 @@ button:disabled {
   font-weight: 700;
   font-size: 1.1rem;
   background: #f8fafc;
+  width: 60px;
 }
 
 .grid {
@@ -187,43 +197,43 @@ button:disabled {
 
 .task {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
   border: 2px solid #000;
   background: #fff;
-  font-weight: 600;
   transition: all 0.15s ease;
   padding: 4px;
 }
 
-.task.correct {
-  background: rgba(16, 185, 129, 0.2);
+.task.correct input {
+  background: rgba(16, 185, 129, 0.3);
+  border-color: rgba(16, 185, 129, 0.6);
 }
 
-.task.wrong {
-  background: rgba(239, 68, 68, 0.15);
-}
-
-.task-expression {
-  font-size: 0.85rem;
-  text-align: center;
+.task.wrong input {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
 }
 
 .task input {
-  width: 50px;
-  height: 28px;
+  width: 60px;
+  height: 60px;
   text-align: center;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 2px;
-  font-size: 0.95rem;
+  border: none;
+  padding: 0;
+  font-size: 1.2rem;
   font-weight: 700;
+  background: transparent;
 }
 
 .task input:disabled {
-  background: #f3f4f6;
+  background: #f3f4f6 !important;
+  cursor: not-allowed;
+}
+
+.task input:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
 }
 
 .footer {
@@ -432,18 +442,10 @@ button:disabled {
     grid-template-rows: repeat(5, 60px);
   }
 
-  .task {
-    border: 1.5px solid #000;
-  }
-
-  .task-expression {
-    font-size: 0.7rem;
-  }
-
   .task input {
-    width: 40px;
-    height: 24px;
-    font-size: 0.85rem;
+    width: 60px;
+    height: 60px;
+    font-size: 1rem;
   }
 
   .result-details {
