@@ -1,6 +1,7 @@
 const GRID_SIZE = 5;
 const TOTAL_TASKS = 25;
 const RANKING_KEY = "masCalculationRanking5x5";
+const OPERATION_SYMBOLS = { add: "+", sub: "−", mul: "×" };
 
 const modeSelect = document.getElementById("modeSelect");
 const timeLimitInput = document.getElementById("timeLimitInput");
@@ -41,21 +42,13 @@ function calculateAnswer(vertical, horizontal, mode) {
   return vertical * horizontal;
 }
 
-function generateNumbers(mode) {
+function generateNumbers() {
   verticalNumbers = [];
   horizontalNumbers = [];
 
   for (let i = 0; i < GRID_SIZE; i++) {
-    if (mode === "mul") {
-      verticalNumbers.push(randomInt(2, 9));
-      horizontalNumbers.push(randomInt(2, 9));
-    } else if (mode === "sub") {
-      verticalNumbers.push(randomInt(10, 99));
-      horizontalNumbers.push(randomInt(1, 9));
-    } else {
-      verticalNumbers.push(randomInt(1, 99));
-      horizontalNumbers.push(randomInt(1, 99));
-    }
+    verticalNumbers.push(randomInt(0, 20));
+    horizontalNumbers.push(randomInt(0, 20));
   }
 }
 
@@ -71,7 +64,7 @@ function createTask(vertical, horizontal, mode) {
 
 function generateTasks(mode) {
   currentMode = mode;
-  generateNumbers(mode);
+  generateNumbers();
   tasks = [];
 
   for (let row = 0; row < GRID_SIZE; row++) {
@@ -85,7 +78,7 @@ function generateTasks(mode) {
 
 function renderHeaderRow() {
   headerRow.innerHTML = "";
-  operationCell.textContent = { add: "+", sub: "−", mul: "×" }[currentMode];
+  operationCell.textContent = OPERATION_SYMBOLS[currentMode];
 
   horizontalNumbers.forEach((num) => {
     const cell = document.createElement("div");
@@ -315,6 +308,9 @@ function resetGame() {
 startBtn.addEventListener("click", startGame);
 resetBtn.addEventListener("click", resetGame);
 checkBtn.addEventListener("click", gradeAnswers);
+modeSelect.addEventListener("change", () => {
+  operationCell.textContent = OPERATION_SYMBOLS[modeSelect.value];
+});
 
 generateTasks(modeSelect.value);
 renderHeaderRow();
