@@ -9,6 +9,7 @@ const startBtn = document.getElementById("startBtn");
 const resetBtn = document.getElementById("resetBtn");
 const checkBtn = document.getElementById("checkBtn");
 const grid = document.getElementById("grid");
+const operationCell = document.getElementById("operationCell");
 const headerRow = document.getElementById("headerRow");
 const sideCol = document.getElementById("sideCol");
 const scoreEl = document.getElementById("score");
@@ -84,11 +85,7 @@ function generateTasks(mode) {
 
 function renderHeaderRow() {
   headerRow.innerHTML = "";
-
-  const opCell = document.createElement("div");
-  opCell.className = "header-cell";
-  opCell.textContent = "+";
-  headerRow.appendChild(opCell);
+  operationCell.textContent = { add: "+", sub: "−", mul: "×" }[currentMode];
 
   horizontalNumbers.forEach((num) => {
     const cell = document.createElement("div");
@@ -100,11 +97,6 @@ function renderHeaderRow() {
 
 function renderSideCol() {
   sideCol.innerHTML = "";
-
-  const opCell = document.createElement("div");
-  opCell.className = "side-cell";
-  opCell.textContent = "+";
-  sideCol.appendChild(opCell);
 
   verticalNumbers.forEach((num) => {
     const cell = document.createElement("div");
@@ -128,7 +120,7 @@ function renderTasks() {
     }
 
     const input = document.createElement("input");
-    input.type = "number";
+    input.type = "text";
     input.value = task.userInput;
     input.setAttribute("aria-label", `問題 ${index + 1}`);
     input.disabled = isAnswered;
@@ -157,7 +149,11 @@ function gradeAnswers() {
   let correctCount = 0;
 
   tasks.forEach((task) => {
-    const userValue = Number(task.userInput);
+    const normalizedInput = task.userInput
+      .replace(/[０-９]/g, (digit) => String.fromCharCode(digit.charCodeAt(0) - 0xfee0))
+      .replace(/[－−]/g, "-")
+      .trim();
+    const userValue = normalizedInput === "" ? Number.NaN : Number(normalizedInput);
     const isCorrect = !Number.isNaN(userValue) && userValue === task.answer;
 
     task.isCorrect = isCorrect;
